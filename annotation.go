@@ -186,7 +186,7 @@ func AnalysisServiceWithFileToken(fileData []byte, serviceName, namespace string
 			}
 		}
 	}
-	fmt.Printf("[SVC] %s Analysis Finished", serviceName)
+	fmt.Printf("[SVC] %s Analysis Finished\n", serviceName)
 	return
 }
 
