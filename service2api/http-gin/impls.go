@@ -1,4 +1,4 @@
-package gin
+package http_gin
 
 import "text/template"
 
