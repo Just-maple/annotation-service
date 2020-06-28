@@ -140,8 +140,12 @@ func AnalysisServiceWithFileToken(fileData []byte, serviceName, namespace string
 				}
 				var params, results []string
 				if ft, ok := method.Type.(*ast.FuncType); ok {
-					collectList(fileData, &params, ft.Params.List, f)
-					collectList(fileData, &results, ft.Results.List, f)
+					if ft.Params!=nil{
+						collectList(fileData, &params, ft.Params.List, f)
+					}
+					if ft.Results!=nil{
+						collectList(fileData, &results, ft.Results.List, f)
+					}
 				}
 				var title string
 				for i, cm := range method.Doc.List {
