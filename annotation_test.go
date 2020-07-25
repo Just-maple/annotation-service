@@ -28,11 +28,15 @@ type (
 // @service(test)
 type TestService2 interface {
 	// add func
-	// @test.http(method=get,route="/add")
-	Add(ctx context.Context, param Param) (res int, err error)
+	// @test:http.get(method=get,route="/add")
+	Add2(ctx context.Context, param Param) (res int, err error)
 	// dec func
-	// @http(method=get,route="/dec")
+	// @http.get.post(method=get,route="/dec")
 	Dec(ctx context.Context, param Param) (res int, err error)
+
+	// ignore this
+	// @http.get.post(method=get,route="/dec")
+	TestService
 }
 
 func TestGetAllService(t *testing.T) {
