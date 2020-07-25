@@ -64,7 +64,7 @@ func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 		}
 
 		// parse options
-		err := parseKV(match[2], newApi.Options)
+		newApi.Args, newApi.Options, err = parseKV(match[2])
 		if err != nil {
 			return err
 		}
@@ -97,18 +97,17 @@ func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 	return
 }
 
-func parseKV(raw string, resMap map[string]string) (err error) {
+func parseKV(raw string) (args []string, resMap map[string]string, err error) {
 	options := strings.Split(raw, ",")
-	if resMap == nil {
-		resMap = make(map[string]string)
-	}
 	if len(options) == 0 {
 		return
 	}
+	resMap = make(map[string]string)
 	for _, o := range options {
 		res := strings.Split(o, "=")
 		if len(res) == 1 {
-			res = append(res, "")
+			args = append(args, o)
+			continue
 		}
 		if len(res) != 2 {
 			err = errors.New("invalid options key")

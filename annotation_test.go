@@ -31,12 +31,12 @@ type TestService2 interface {
 	// This is title
 	//
 	// Doc for 1
-	// @test:http.get(method=get,route="/add")
+	// @test:http.get(route="/add")
 	//
 	// Doc for 2
-	// @test:http.get(method=get,route="/add2")
+	// @test:http.get(route="/add2")
 	//
-	// @test2:http.get(method=get,route="/add3")
+	// @test2:http.get("/add3","/add4")
 	//
 	// ignore this
 	// ignore this

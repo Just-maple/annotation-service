@@ -26,6 +26,7 @@ type (
 		Returns []string
 		Title   string
 		Method  string
+		Args    []string
 		Options map[string]string
 		Doc     []string
 	}
@@ -103,11 +104,10 @@ func GetAllService(file string) (res []Service, err error) {
 				svc := Service{
 					InterfaceName: sp.Name.String(),
 					ServiceName:   serviceName,
-					OtherOptions:  map[string]string{},
 					ApiAnnotates:  apis,
 				}
 				if len(annotate) > 1 {
-					err = parseKV(strings.Join(annotate[1:], ","), svc.OtherOptions)
+					_, svc.OtherOptions, err = parseKV(strings.Join(annotate[1:], ","))
 					if err != nil {
 						return nil, err
 					}
