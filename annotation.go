@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	apiAnnotateRegex     = regexp.MustCompile(`@([A-Za-z0-9_.:]+?)\((.+?)\)`)
+	apiAnnotateRegex     = regexp.MustCompile(`@(!?[A-Za-z0-9_.:]+?)\((.+?)\)`)
 	serviceAnnotateRegex = regexp.MustCompile(`@service\((.+?)\)`)
 
 	logger = log.New(os.Stdout, "[SVC] ", 0)
@@ -27,6 +27,7 @@ type (
 		Title   string
 		Method  string
 		Options map[string]string
+		Doc     []string
 	}
 
 	Service struct {

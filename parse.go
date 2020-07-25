@@ -28,21 +28,26 @@ func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 	} else {
 		return
 	}
-	var title string
+	var (
+		title     string
+		docOffset int
+	)
 	for i, cm := range method.Doc.List {
 		// match annotation like
 		// @namespace:type.method(opt1=xxx,opt2=xxx,opt3=xxx)
 		match := apiAnnotateRegex.FindStringSubmatch(cm.Text)
-		if len(match) == 0 {
+		if len(match) != 3 {
 			if i == 0 {
 				text := strings.TrimPrefix(cm.Text, "//")
 				title = strings.TrimSpace(text)
+				docOffset = 1
+			} else if len(strings.TrimSpace(strings.TrimPrefix(cm.Text, "//"))) == 0 {
+				// split empty doc
+				docOffset = i + 1
 			}
 			continue
 		}
-		if len(match) != 3 {
-			continue
-		}
+		// new api item
 		newApi := ApiAnnotateItem{
 			Options: make(map[string]string),
 			Handler: method.Names[0].Name,
@@ -50,6 +55,14 @@ func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 			Params:  params,
 			Returns: results,
 		}
+
+		// item doc
+		if docOffset < i {
+			for _, d := range method.Doc.List[docOffset:i] {
+				newApi.Doc = append(newApi.Doc, d.Text)
+			}
+		}
+
 		// parse options
 		err := parseKV(match[2], newApi.Options)
 		if err != nil {
@@ -59,7 +72,9 @@ func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 		// check namespace
 		if strings.ContainsRune(apiType, ':') {
 			sp := strings.Split(apiType, ":")
-			if sp[0] != p.namespace {
+			if (strings.HasPrefix(sp[0], "!") && sp[0] == p.namespace) ||
+				(!strings.HasPrefix(sp[0], "!") && sp[0] != p.namespace) {
+				docOffset = i + 1
 				continue
 			}
 			apiType = sp[1]
@@ -76,6 +91,8 @@ func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 			}
 		}
 		p.m[apiType].Apis = append(p.m[apiType].Apis, newApi)
+
+		docOffset = i + 1
 	}
 	return
 }

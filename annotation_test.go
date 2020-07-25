@@ -26,16 +26,28 @@ type (
 )
 
 // @service(test)
+// @service(test2)
 type TestService2 interface {
-	// add func
+	// This is title
+	//
+	// Doc for 1
 	// @test:http.get(method=get,route="/add")
+	//
+	// Doc for 2
+	// @test:http.get(method=get,route="/add2")
+	//
+	// @test2:http.get(method=get,route="/add3")
+	//
+	// ignore this
+	// ignore this
 	Add2(ctx context.Context, param Param) (res int, err error)
 	// dec func
+	// Doc for 1
 	// @http.get.post(method=get,route="/dec")
 	Dec(ctx context.Context, param Param) (res int, err error)
 
 	// ignore this
-	// @http.get.post(method=get,route="/dec")
+	// @test2:http.get.post(method=get,route="/dec")
 	TestService
 }
 

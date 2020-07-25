@@ -215,6 +215,9 @@ func WriteApiFiles(path string, route *GinRoute) (err error) {
 		panic(err)
 	}
 	ret, err := imports.Process("", bf.Bytes(), nil)
+	if err != nil {
+		panic(err)
+	}
 	if err = ioutil.WriteFile(path, ret, 0664); err != nil {
 		panic(err)
 	}
