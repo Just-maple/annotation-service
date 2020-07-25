@@ -1,0 +1,219 @@
+definitions:
+  example.Param:
+    properties:
+      float32:
+        type: number
+      int:
+        type: integer
+      string:
+        type: string
+    type: object
+  example.Ret:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /test/{add2}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: example.Param
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/example.Param'
+      - description: add2
+        in: path
+        name: add2
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example.Ret'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.Ret'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: This is title
+  /test/{dec}:
+    get:
+      parameters:
+      - in: query
+        name: float32
+        type: number
+      - in: query
+        name: int
+        type: integer
+      - in: query
+        name: string
+        type: string
+      - description: dec
+        in: path
+        name: dec
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/example.Ret'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: dec func
+  /test/add:
+    get:
+      parameters:
+      - in: query
+        name: float32
+        type: number
+      - in: query
+        name: int
+        type: integer
+      - in: query
+        name: string
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example.Ret'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.Ret'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: This is title
+  /test/dec:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: example.Param
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/example.Param'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/example.Ret'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: dec func
+  /test2/{dec}:
+    get:
+      parameters:
+      - in: query
+        name: float32
+        type: number
+      - in: query
+        name: int
+        type: integer
+      - in: query
+        name: string
+        type: string
+      - description: dec
+        in: path
+        name: dec
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/example.Ret'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: dec func
+  /test2/add3:
+    get:
+      parameters:
+      - in: query
+        name: float32
+        type: number
+      - in: query
+        name: int
+        type: integer
+      - in: query
+        name: string
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/example.Ret'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.Ret'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: This is title
+  /test2/dec:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: example.Param
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/example.Param'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/example.Ret'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/example.Ret'
+      summary: dec func
+swagger: "2.0"

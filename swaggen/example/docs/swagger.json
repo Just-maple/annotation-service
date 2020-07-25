@@ -1,0 +1,360 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {},
+        "license": {}
+    },
+    "paths": {
+        "/test/add": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "This is title",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "name": "float32",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "int",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "string",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example.Ret"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example.Ret"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        },
+        "/test/dec": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "dec func",
+                "parameters": [
+                    {
+                        "description": "example.Param",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/example.Param"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        },
+        "/test/{add2}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "This is title",
+                "parameters": [
+                    {
+                        "description": "example.Param",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/example.Param"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "add2",
+                        "name": "add2",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example.Ret"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example.Ret"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        },
+        "/test/{dec}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "dec func",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "name": "float32",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "int",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "string",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "dec",
+                        "name": "dec",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        },
+        "/test2/add3": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "This is title",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "name": "float32",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "int",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "string",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/example.Ret"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/example.Ret"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        },
+        "/test2/dec": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "dec func",
+                "parameters": [
+                    {
+                        "description": "example.Param",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/example.Param"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        },
+        "/test2/{dec}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "dec func",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "name": "float32",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "int",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "string",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "dec",
+                        "name": "dec",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/example.Ret"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "example.Param": {
+            "type": "object",
+            "properties": {
+                "float32": {
+                    "type": "number"
+                },
+                "int": {
+                    "type": "integer"
+                },
+                "string": {
+                    "type": "string"
+                }
+            }
+        },
+        "example.Ret": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
