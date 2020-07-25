@@ -2,12 +2,14 @@ package annotation_service
 
 import (
 	"errors"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -34,6 +36,7 @@ type (
 	Service struct {
 		InterfaceName string
 		ServiceName   string
+		Pkg           string
 		OtherOptions  map[string]string
 		ApiAnnotates  map[string]*ApiAnnotate
 	}
@@ -51,6 +54,24 @@ type (
 		file        *ast.File
 	}
 )
+
+func (r Service) GetPath(apiDir string) (groupRoute, dir, pkg string) {
+	group := r.OtherOptions["group"]
+	if len(group) == 0 {
+		group = r.ServiceName
+	}
+	group = strings.Trim(group, `"`)
+	// 组路由前缀
+	groupRoute = r.OtherOptions["route"]
+	if len(groupRoute) == 0 {
+		groupRoute = fmt.Sprintf(`"%s"`, group)
+	}
+	// 创建组目录
+	dir = filepath.Join(apiDir, group)
+	// package名
+	pkg = filepath.Base(dir)
+	return
+}
 
 func GetAllService(file string) (res []Service, err error) {
 	fileData, err := ioutil.ReadFile(file)
@@ -105,6 +126,7 @@ func GetAllService(file string) (res []Service, err error) {
 					InterfaceName: sp.Name.String(),
 					ServiceName:   serviceName,
 					ApiAnnotates:  apis,
+					Pkg:           f.Name.Name,
 				}
 				if len(annotate) > 1 {
 					_, svc.OtherOptions, err = parseKV(strings.Join(annotate[1:], ","))

@@ -1,4 +1,4 @@
-package swag
+package swaggen
 
 import (
 	"bytes"
@@ -146,6 +146,7 @@ var typeMap = map[string]string{
 
 func getParams(api annotation_service.ApiAnnotateItem, route string) (params string) {
 	var paramList []string
+	var isJson bool
 	defer func() {
 		if len(paramList) == 0 {
 			params = "//"
@@ -154,6 +155,9 @@ func getParams(api annotation_service.ApiAnnotateItem, route string) (params str
 		for i := range paramList {
 			paramList[i] = fmt.Sprintf("// @Param %s", paramList[i])
 		}
+		if isJson {
+			paramList = append(paramList, "// @Accept json")
+		}
 		params = strings.Join(paramList, "\n")
 	}()
 	if len(api.Params) > 0 && api.Params[0] == "context.Context" {
@@ -161,7 +165,10 @@ func getParams(api annotation_service.ApiAnnotateItem, route string) (params str
 	}
 	if len(api.Params) > 0 {
 		if strings.EqualFold(api.Method, "get") {
-			paramList = append(paramList, fmt.Sprintf(`_ query %s true "%s"`, api.Params[0], api.Params[0]))
+			paramList = append(paramList, fmt.Sprintf(`query query %s true "%s"`, api.Params[0], api.Params[0]))
+		} else {
+			isJson = true
+			paramList = append(paramList, fmt.Sprintf(`json body %s true "%s"`, api.Params[0], api.Params[0]))
 		}
 	}
 	spRoutes := strings.Split(route, "/")

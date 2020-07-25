@@ -118,23 +118,7 @@ func Service2GinApi(apiDir, serviceFilePath, implDir, serviceMountFilePath, test
 			}
 		}
 
-		// 接口组
-		group := r.OtherOptions["group"]
-		if len(group) == 0 {
-			group = r.ServiceName
-		}
-		group = strings.Trim(group, `"`)
-
-		// 组路由前缀
-		groupRoute := r.OtherOptions["route"]
-		if len(groupRoute) == 0 {
-			groupRoute = fmt.Sprintf(`"%s"`, r.ServiceName)
-		}
-		// 创建组目录
-		dir := filepath.Join(apiDir, group)
-
-		// package名
-		pkg := filepath.Base(group)
+		groupRoute, dir, pkg := r.GetPath(apiDir)
 		// 路由组
 		route := GinRoute{
 			Package:     pkg,

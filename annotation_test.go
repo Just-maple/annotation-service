@@ -40,7 +40,7 @@ type TestService2 interface {
 	//
 	// ignore this
 	// ignore this
-	Add2(ctx context.Context, param Param) (res int, err error)
+	Add2(ctx context.Context, param Param) (res Service, err error)
 	// dec func
 	// Doc for 1
 	// @http.get.post(method=get,route="/dec")
