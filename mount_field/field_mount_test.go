@@ -7,8 +7,8 @@ import (
 )
 
 type Test struct {
-	A testfield.A
-	B testfield.B
+	FF testfield.A
+	B  testfield.B
 	//comment1
 	//comment2
 }
@@ -19,8 +19,8 @@ func TestMount(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_ = set.MountTypeField("testfield.A")
-	_ = set.MountTypeField("testfield.B")
+	_ = set.MountTypeField("testfield.A", "FF")
+	_ = set.MountTypeField("testfield.B", "")
 
 	err = set.Write()
 	if err != nil {

@@ -24,7 +24,7 @@ type structMounter struct {
 
 type StructMounter interface {
 	Write() (err error)
-	MountTypeField(fieldType string) error
+	MountTypeField(fieldType string, name string) error
 }
 
 func NewStructMounter(structPath, structName string) (set StructMounter, err error) {
@@ -60,7 +60,7 @@ func (sSet *structMounter) Write() (err error) {
 	return
 }
 
-func (sSet *structMounter) MountTypeField(fieldType string) (err error) {
+func (sSet *structMounter) MountTypeField(fieldType, name string) (err error) {
 	var (
 		typ    = sSet.object.Decl.(*ast.TypeSpec)
 		fields = typ.Type.(*ast.StructType)
@@ -83,7 +83,7 @@ func (sSet *structMounter) MountTypeField(fieldType string) (err error) {
 	if has {
 		return
 	}
-	sSet.insertField(fieldType, fields.Fields)
+	sSet.insertField(fieldType, name, fields.Fields)
 	err = sSet.freshSet()
 	return
 }
@@ -102,9 +102,12 @@ func (sSet *structMounter) freshSet() (err error) {
 	return
 }
 
-func (sSet *structMounter) insertField(fieldType string, list *ast.FieldList) {
+func (sSet *structMounter) insertField(fieldType, name string, list *ast.FieldList) {
 	sp := strings.Split(fieldType, ".")
-	addStructField(sSet.fileSet, list, fieldType, sp[1])
+	if len(name) == 0 {
+		name = sp[1]
+	}
+	addStructField(sSet.fileSet, list, fieldType, name)
 }
 
 // todo:fix comment
