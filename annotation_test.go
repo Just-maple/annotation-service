@@ -23,6 +23,11 @@ type (
 
 	Param struct {
 	}
+
+	// @dao(test)
+	TestDAO interface {
+		Add(ctx context.Context, param Param) (res int, err error)
+	}
 )
 
 // @service(test)
@@ -45,6 +50,7 @@ type TestService2 interface {
 	// Doc for 1
 	// @http.get.post(method=get,route="/dec")
 	Dec(ctx context.Context, param Param) (res int, err error)
+	Dec2(ctx context.Context, param Param) (res int, err error)
 
 	// ignore this
 	// @test2:http.get.post(method=get,route="/dec")
@@ -54,6 +60,15 @@ type TestService2 interface {
 func TestGetAllService(t *testing.T) {
 	_, f, _, _ := runtime.Caller(0)
 	ret, err := GetAllService(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("%v", ret)
+}
+
+func TestGetAllServiceIdent(t *testing.T) {
+	_, f, _, _ := runtime.Caller(0)
+	ret, err := GetAllService(f, WithIdent("dao"))
 	if err != nil {
 		t.Fatal(err)
 	}

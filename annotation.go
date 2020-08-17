@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	apiAnnotateRegex     = regexp.MustCompile(`@(!?[A-Za-z0-9_.:]+?)\((.+?)\)`)
-	serviceAnnotateRegex = regexp.MustCompile(`@service\((.+?)\)`)
+	apiAnnotateRegex             = regexp.MustCompile(`@(!?[A-Za-z0-9_.:]+?)\((.+?)\)`)
+	serviceAnnotateRegexTemplate = `@%s\((.+?)\)`
 
 	logger = log.New(os.Stdout, "[SVC] ", 0)
 )
@@ -53,7 +53,31 @@ type (
 		fileData    []byte
 		file        *ast.File
 	}
+
+	Option func(*opt)
+
+	opt struct {
+		Ident string
+	}
+
+	Options []Option
 )
+
+func WithIdent(ident string) Option {
+	return func(o *opt) {
+		o.Ident = ident
+	}
+}
+
+func (os Options) Apply() *opt {
+	op := &opt{
+		Ident: "service",
+	}
+	for _, o := range os {
+		o(op)
+	}
+	return op
+}
 
 func (r Service) GetPath(apiDir string) (groupRoute, dir, pkg string) {
 	group := r.OtherOptions["group"]
@@ -73,7 +97,7 @@ func (r Service) GetPath(apiDir string) (groupRoute, dir, pkg string) {
 	return
 }
 
-func GetAllService(file string) (res []Service, err error) {
+func GetAllService(file string, opts ...Option) (res []Service, err error) {
 	fileData, err := ioutil.ReadFile(file)
 	if err != nil {
 		return
@@ -82,6 +106,10 @@ func GetAllService(file string) (res []Service, err error) {
 	if err != nil {
 		return
 	}
+
+	o := Options(opts).Apply()
+	serviceAnnotateRegex := regexp.MustCompile(fmt.Sprintf(serviceAnnotateRegexTemplate, o.Ident))
+
 	for i := range f.Decls {
 		decl, ok := f.Decls[i].(*ast.GenDecl)
 		if !ok {
