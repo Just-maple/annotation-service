@@ -1,8 +1,11 @@
 package annotation_service
 
 import (
+	"bytes"
 	"errors"
 	"go/ast"
+	"go/format"
+	"go/token"
 	"strings"
 )
 
@@ -129,14 +132,51 @@ func parseKV(raw string) (args []string, resMap map[string]string, err error) {
 
 func collectList(fileData []byte, collectList *[]string, fl []*ast.Field, f *ast.File) {
 	for _, l := range fl {
-		p := string(fileData[l.Type.Pos()-1 : l.Type.End()-1])
-		if se, isSt := l.Type.(*ast.StarExpr); isSt {
-			p = p[1:]
-			l.Type = se.X
+		addPkg2type(&l.Type, f.Name.String())
+		var bf bytes.Buffer
+		_ = format.Node(&bf, token.NewFileSet(), l.Type)
+		*collectList = append(*collectList, bf.String())
+	}
+}
+
+func addPkg2type(typ *ast.Expr, itfPkg string) {
+	switch s := (*typ).(type) {
+	case *ast.StarExpr:
+		s.Star = 0
+		addPkg2type(&s.X, itfPkg)
+	case *ast.ArrayType:
+		addPkg2type(&s.Elt, itfPkg)
+	case *ast.MapType:
+		addPkg2type(&s.Key, itfPkg)
+		addPkg2type(&s.Value, itfPkg)
+	case *ast.SelectorExpr:
+		if s.Sel.Obj != nil {
+			s.Sel.Obj = ast.NewObj(s.Sel.Obj.Kind, s.Sel.Obj.Name)
 		}
-		if isPackageIdent(l.Type) {
-			p = f.Name.String() + "." + p
+		s.Sel.NamePos = 0
+		if s.X != nil {
+			switch xt := s.X.(type) {
+			case *ast.Ident:
+				s.X = ast.NewIdent(xt.Name)
+			}
 		}
-		*collectList = append(*collectList, p)
+	case *ast.Ident:
+		if s.Obj == nil {
+			if s.IsExported() {
+				s.NamePos = 0
+				*typ = &ast.SelectorExpr{
+					X:   ast.NewIdent(itfPkg),
+					Sel: s,
+				}
+			} else {
+				s.NamePos = 0
+			}
+		} else if s.Obj.Kind == ast.Typ {
+			s.NamePos = 0
+			*typ = &ast.SelectorExpr{
+				X:   ast.NewIdent(itfPkg),
+				Sel: s,
+			}
+		}
 	}
 }

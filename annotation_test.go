@@ -14,11 +14,18 @@ type (
 		Add(ctx context.Context, param Param) (res int, err error)
 	}
 
-	// @service(test)
-	TestService3 interface {
+	// @service(test4)
+	TestService4 interface {
 		// add func
 		// @http(method=get,route="/add")
 		Add(ctx context.Context, param Param) (res int, err error)
+	}
+
+	// @service(test3)
+	TestService3 interface {
+		// add func
+		// @http(method=get,route="/add")
+		Add(ctx context.Context, param []Param) (res map[Param]map[string][]Param, err error)
 	}
 
 	Param struct {
