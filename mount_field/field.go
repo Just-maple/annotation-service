@@ -111,23 +111,25 @@ Recheck:
 				}
 				if fieldType == fpkg.Name+"."+t.Sel.Name {
 					return
-				} else {
-					// rename duplicated field name
-					spF := strings.Split(fieldName, "_")
-					if len(spF) > 1 {
-						if t, err := strconv.Atoi(spF[len(spF)-1]); err == nil {
-							spF[len(spF)-1] = strconv.Itoa(t + 1)
-							fieldName = strings.Join(spF, "_")
-							goto Recheck
-						}
-					}
-					fieldName += "_2"
-					// should recheck if name changed
-					goto Recheck
 				}
 			case *ast.Ident:
-
+				if t.String() == fieldType {
+					return
+				}
+			default:
+				continue
 			}
+			// rename duplicated field name
+			if splitFieldName := strings.Split(fieldName, "_"); len(splitFieldName) > 1 {
+				if t, err := strconv.Atoi(splitFieldName[len(splitFieldName)-1]); err == nil {
+					splitFieldName[len(splitFieldName)-1] = strconv.Itoa(t + 1)
+					fieldName = strings.Join(splitFieldName, "_")
+					goto Recheck
+				}
+			}
+			fieldName += "_2"
+			// should recheck if name changed
+			goto Recheck
 		}
 	}
 
