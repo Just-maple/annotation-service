@@ -97,18 +97,36 @@ func (sSet *structMounter) MountTypeField(fieldType, fieldName, pkgPath string) 
 	}
 
 	// check duplicate field
+Recheck:
 	for _, f := range list {
-		se, ok := f.Type.(*ast.SelectorExpr)
-		if !ok {
-			continue
-		}
-		fpkg, ok := se.X.(*ast.Ident)
-		if !ok {
-			continue
-		}
 		for _, name := range f.Names {
-			if fieldType == fpkg.Name+"."+se.Sel.Name && name.String() == fieldName {
-				return
+			if name.String() != fieldName {
+				continue
+			}
+			switch t := f.Type.(type) {
+			case *ast.SelectorExpr:
+				fpkg, ok := t.X.(*ast.Ident)
+				if !ok {
+					continue
+				}
+				if fieldType == fpkg.Name+"."+t.Sel.Name {
+					return
+				} else {
+					// rename duplicated field name
+					spF := strings.Split(fieldName, "_")
+					if len(spF) > 1 {
+						if t, err := strconv.Atoi(spF[len(spF)-1]); err == nil {
+							spF[len(spF)-1] = strconv.Itoa(t + 1)
+							fieldName = strings.Join(spF, "_")
+							goto Recheck
+						}
+					}
+					fieldName += "_2"
+					// should recheck if name changed
+					goto Recheck
+				}
+			case *ast.Ident:
+
 			}
 		}
 	}

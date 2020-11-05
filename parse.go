@@ -9,11 +9,6 @@ import (
 	"strings"
 )
 
-func isPackageIdent(t ast.Expr) bool {
-	id, isIdent := t.(*ast.Ident)
-	return isIdent && id.Name[0] <= 'Z' && id.Name[0] >= 'A'
-}
-
 func (p AnnotateParser) parseMethod(method *ast.Field) (err error) {
 	// check doc
 	if method.Doc == nil {
