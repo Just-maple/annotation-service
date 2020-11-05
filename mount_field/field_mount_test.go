@@ -4,12 +4,13 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Just-maple/annotation-service/mount_field/testfield"
+	testfieldagsags "github.com/Just-maple/annotation-service/mount_field/testfield"
 )
 
 type Test struct {
 	GSSG os.Signal
-	B    testfield.B
+	FFF  os.Signal
+	B    testfieldagsags.B
 	//	asggasgas
 }
 
@@ -21,7 +22,8 @@ func TestMount(t *testing.T) {
 	}
 
 	_ = set.MountTypeField("os.Signal", "GSSG", "os")
-	_ = set.MountTypeField("testfield.B", "", "github.com/Just-maple/annotation-service/mount_field/testfield")
+	_ = set.MountTypeField("os.Signal", "FFF", "os")
+	_ = set.MountTypeField("testfieldagsags.B", "", "github.com/Just-maple/annotation-service/mount_field/testfield")
 
 	err = set.Write()
 	if err != nil {
