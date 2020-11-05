@@ -8,6 +8,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"golang.org/x/tools/imports"
@@ -24,7 +25,7 @@ type structMounter struct {
 
 type StructMounter interface {
 	Write() (err error)
-	MountTypeField(fieldType string, name string) error
+	MountTypeField(fieldType string, name, pkg string) error
 }
 
 func NewStructMounter(structPath, structName string) (set StructMounter, err error) {
@@ -60,30 +61,65 @@ func (sSet *structMounter) Write() (err error) {
 	return
 }
 
-func (sSet *structMounter) MountTypeField(fieldType, name string) (err error) {
+func (sSet *structMounter) MountTypeField(fieldType, name, pkgPath string) (err error) {
 	var (
 		typ    = sSet.object.Decl.(*ast.TypeSpec)
 		fields = typ.Type.(*ast.StructType)
 		list   = fields.Fields.List
 	)
-	var has bool
+
+	pkgPath = strings.Trim(pkgPath, `"`)
+
+	var needImport *string
+
+	// check imports
+	if len(pkgPath) > 0 {
+		sp := strings.Split(fieldType, ".")
+		if len(sp) != 2 {
+			err = errors.New("invalid type with import package path")
+			return
+		}
+		if p, ok := sSet.getPackageName(pkgPath); ok {
+			sp[0] = p
+			fieldType = strings.Join(sp, ".")
+		} else {
+			needImport = &sp[0]
+		}
+	}
+
+	// check duplicate field
 	for _, f := range list {
 		se, ok := f.Type.(*ast.SelectorExpr)
 		if !ok {
 			continue
 		}
-		pkg, ok := se.X.(*ast.Ident)
+		fpkg, ok := se.X.(*ast.Ident)
 		if !ok {
 			continue
 		}
-		if fieldType == pkg.Name+"."+se.Sel.Name {
-			has = true
+		if fieldType == fpkg.Name+"."+se.Sel.Name {
+			return
 		}
 	}
-	if has {
-		return
+
+	sSet.insertField(fieldType, name, pkgPath, fields.Fields)
+
+	// append new import
+	if needImport != nil {
+		importDecl, ok := sSet.astFile.Decls[0].(*ast.GenDecl)
+		if ok {
+			importDecl.Specs = append(importDecl.Specs, &ast.ImportSpec{
+				Doc: nil,
+				Name: &ast.Ident{
+					Name: *needImport,
+				},
+				Path: &ast.BasicLit{
+					Kind:  token.STRING,
+					Value: strconv.Quote(pkgPath),
+				},
+			})
+		}
 	}
-	sSet.insertField(fieldType, name, fields.Fields)
 	err = sSet.freshSet()
 	return
 }
@@ -102,16 +138,34 @@ func (sSet *structMounter) freshSet() (err error) {
 	return
 }
 
-func (sSet *structMounter) insertField(fieldType, name string, list *ast.FieldList) {
+func (sSet *structMounter) getPackageName(pkgPath string) (name string, ok bool) {
+	if len(pkgPath) == 0 {
+		return
+	}
+	for _, imp := range sSet.astFile.Imports {
+		v := strings.Trim(imp.Path.Value, `"`)
+		if v == pkgPath {
+			if imp.Name != nil {
+				return imp.Name.Name, true
+			} else {
+				sp := strings.Split(pkgPath, "/")
+				return sp[len(sp)-1], true
+			}
+		}
+	}
+	return
+}
+
+func (sSet *structMounter) insertField(fieldType, name, pkg string, list *ast.FieldList) {
 	sp := strings.Split(fieldType, ".")
 	if len(name) == 0 {
 		name = sp[1]
 	}
-	addStructField(sSet.fileSet, list, fieldType, name)
+	addStructField(sSet.fileSet, list, fieldType, name, pkg)
 }
 
 // todo:fix comment
-func addStructField(fset *token.FileSet, fields *ast.FieldList, typ string, name string) {
+func addStructField(fset *token.FileSet, fields *ast.FieldList, typ string, name, pkg string) {
 	f := &ast.Field{
 		Names: []*ast.Ident{{Name: name}},
 		Type:  &ast.Ident{Name: typ},
